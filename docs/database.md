@@ -4,7 +4,7 @@
 
 Моделът е реализиран в Data с атрибути в entities, DataConstants за дължини,
 SQL типове и CHECK/filter изрази, и допълнителен Fluent API директно в
-ApplicationDbContext.OnModelCreating чрез private методи по области.
+ApplicationDbContext.OnModelCreating, групиран по области без отделни Configure методи.
 Required/MaxLength, Table/Column, Key/ForeignKey и Timestamp са в entities.
 Precision запазва оригиналните precision/scale facets заедно с Column SQL типа.
 Nullable свойствата не получават Required. SQL CHECK ограниченията остават
@@ -944,3 +944,35 @@ EF has-pending-model-changes потвърждава съвпадение със 
 Съществуващите migrations, snapshot и предавания SQL script не са редактирани.
 Няма нова миграция и няма промяна на приложната база или user-secrets.
 SQL Server тестовете използват само новосъздадени disposable тестови бази.
+
+## Традиционен стил и обратни navigation properties
+
+Рефакториране от commit 62aaf7f: namespaces със скоби, традиционен DbContext
+конструктор, DbSet get/set, атрибути и using static към DataConstants групите.
+Fluent API е директно в OnModelCreating, с отделни chained операции и
+описателни lambda имена. Required string initializers са null!; SQL defaults,
+nullable полетата, EUR и другите съществуващи initializers не са променени.
+
+Добавени са 67 обратни domain navigation properties и 4 колекции за съществуващите
+Identity връзки към ApplicationUser (UserClaims/UserLogins/UserTokens/UserRoles).
+Общо: 68 инициализирани ICollection<T> и 3 nullable one-to-one references:
+ApplicationUser.CourierProfile, Order.DeliveryAddress и Review.Reply.
+При няколко FK към потребител имената са отделни, например
+CreatedSupportTickets/AssignedSupportTickets и OrderStatusChanges/DeliveryStatusChanges.
+Restaurant.Menus, Menu.Categories, Dish.Variants/OptionGroups, Cart.Items и
+останалите обратни връзки използват съществуващите FK и explicit join entities.
+
+Запазена е EF cardinality, включително WithMany при Cart.User, Payment.Order,
+Delivery.Order и Review.Order, където SQL unique индекси ограничават броя.
+Затова обратните им свойства са колекции (Carts/Payments/Deliveries/Reviews).
+Domain NO ACTION и стандартното Identity CASCADE са непроменени.
+
+Преди/след: релационният export отново е byte-for-byte еднакъв, SHA-256
+556D060629C4631A726836BE6C7953A7A9D78C6B8DC29402E13890269475C987.
+CREATE SQL export: SHA-256
+7DB3B5973B8CC22A3DAE3D26B8729A44FBC70A54AEAD568E92ABACEB1E87D9F2.
+Запазени са 49 моделни таблици, 326 колони, 73 FK и 44 CHECK ограничения.
+Navigation metadata е разширена, релационната схема не е променена.
+NavigationMappingTests проверява правилните inverse/FK двойки, различните
+user relationships, инициализацията на колекциите и Identity delete behavior,
+без отваряне на DB connection.

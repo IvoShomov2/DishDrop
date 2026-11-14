@@ -14,10 +14,18 @@ Data отделя persistence от HTTP/UI; Core ще отдели бизнес 
 контролерите. Persistence enums остават в Data. Основните настройки са атрибути в entities: Required/MaxLength, Table/Column,
 Key/ForeignKey, Timestamp и Precision. DataConstants събира дължините, SQL
 типовете и точните CHECK/filter изрази, групирани по entity/област.
-Допълнителният Fluent API е в private методи на ApplicationDbContext,
-извикани след base.OnModelCreating: composite keys, relationships/delete behavior,
+Допълнителният Fluent API е директно в ApplicationDbContext.OnModelCreating,
+групиран по предметни области след base.OnModelCreating: composite keys, relationships/delete behavior,
 индекси, CHECK constraints, defaults и дължини на стандартните Identity ключове.
-Няма отделни Configuration класове или автоматично откриване от assembly.
+Няма отделни Configuration класове, Configure помощни методи или автоматично откриване от assembly.
+Entities, DataConstants и DbContext използват namespaces със скоби. Контекстът има
+традиционен конструктор и DbSet свойства с get/set. В entities има празни редове
+между свойствата, null! за required strings/references и using static за
+съответните DataConstants групи, когато няма двусмислие. Съществуващите други
+initializers (например EUR, IsActive, UTC timestamps и rowversion масиви) са запазени.
+Обратните navigation properties са свързани изрично със съществуващите FK.
+Колекциите са ICollection<T> с new List<T>(); optional one-to-one обратните
+references са nullable. Explicit join entities не са заменени с implicit many-to-many.
 Data/Entities остава DB моделът, Web/Models — ViewModels/FormModels, Core — бъдещи услуги.
 
 Identity UI използва Razor Pages и ApplicationUser със запазен string ключ.

@@ -13,10 +13,11 @@
 - [x] Запазена Identity миграция и AddInitialBusinessSchema migration.
 - [x] Идемпотентен SQL script, изпитан двукратно.
 - [x] Изрично справочно/demo seeding без hardcoded пароли.
-- [x] Реални SQL Server LocalDB проверки: 34 DB теста + 4 HTTP теста без база.
+- [x] Реални SQL Server LocalDB проверки: 34 DB теста + 4 HTTP и 2 metadata теста без база.
+- [x] Традиционен entity/DbContext стил и изрично mapped обратни navigation properties.
 - [x] Документация, спецификация и ER диаграми.
 
-Release build: 0 warnings/errors; 38 успешни integration теста, 0 skipped.
+Release build: 0 warnings/errors; 40 успешни integration теста, 0 skipped.
 UnitTests няма бизнес тестове. Няма твърдение за бизнес coverage.
 Локално SQL Server е LocalDB 15.0.4382.1. Docker daemon не беше достъпен;
 новият SQL Server 2022 CI job е подготвен, но не е изпълнен в GitHub.
