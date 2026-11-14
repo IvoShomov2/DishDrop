@@ -187,7 +187,7 @@ public class DatabaseSchemaTests
         switch (scenario)
         {
             case "DefaultAddress": db.Add(new CustomerAddress { UserId = "dishdrop-demo-customer", DeliveryAreaId = area.Id, Label = "Second", StreetAddress = "Test", IsDefault = true }); break;
-            case "RestaurantSlug": db.Add(new Restaurant { CityId = restaurant.CityId, Name = "Duplicate", Slug = restaurant.Slug, Address = "Test", PhoneNumber = "000", EstimatedPreparationMinutes = 1 }); break;
+            case "RestaurantSlug": db.Add(new Restaurant { CityId = restaurant.CityId, Name = "Duplicate", Slug = restaurant.Slug, Description = "Test restaurant", Address = "Test", PhoneNumber = "000", EstimatedPreparationMinutes = 1 }); break;
             case "Email": db.Add(new ApplicationUser { UserName = "other@example.com", NormalizedUserName = "OTHER@EXAMPLE.COM", Email = "customer@example.com", NormalizedEmail = "CUSTOMER@EXAMPLE.COM" }); break;
             case "ForeignKey": db.Add(new DeliveryArea { CityId = int.MaxValue, Name = "Invalid", NormalizedName = "INVALID" }); break;
             case "CompositePrimaryKey":
@@ -227,7 +227,8 @@ public class DatabaseSchemaTests
                     AssignedAtUtc = DateTime.UtcNow, ReleasedAtUtc = DateTime.UtcNow.AddHours(-1) }); break;
         }
         var exception = await Assert.ThrowsAsync<DbUpdateException>(() => db.SaveChangesAsync());
-        Assert.IsType<SqlException>(exception.InnerException);
+        var sqlException = Assert.IsType<SqlException>(exception.InnerException);
+        if (scenario == "RestaurantSlug") Assert.Equal(2601, sqlException.Number);
     }
 
     [Fact]

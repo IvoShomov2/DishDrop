@@ -1,16 +1,18 @@
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using DishDrop.Data.Enums;
 
-namespace DishDrop.Data.Entities;
-
-[Table("RestaurantCuisineType")]
-public class RestaurantCuisineType
+namespace DishDrop.Data.Entities
 {
-    public int RestaurantId { get; set; }
-    public int CuisineTypeId { get; set; }
-    [ForeignKey(nameof(RestaurantId))]
-    public Restaurant Restaurant { get; set; } = null!;
-    [ForeignKey(nameof(CuisineTypeId))]
-    public CuisineType CuisineType { get; set; } = null!;
+    [Table("RestaurantCuisineType")]
+    public class RestaurantCuisineType
+    {
+        public int RestaurantId { get; set; }
+
+        public int CuisineTypeId { get; set; }
+
+        [ForeignKey(nameof(RestaurantId))]
+        public Restaurant Restaurant { get; set; } = null!;
+
+        [ForeignKey(nameof(CuisineTypeId))]
+        public CuisineType CuisineType { get; set; } = null!;
+    }
 }
