@@ -45,7 +45,7 @@ dotnet run --project DishDrop/DishDrop.Web --launch-profile https
 ~~~json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=(localdb)\mssqllocaldb;Database=DishDrop;Trusted_Connection=True;MultipleActiveResultSets=true"
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=DishDrop;Trusted_Connection=True;MultipleActiveResultSets=true"
   }
 }
 ~~~
