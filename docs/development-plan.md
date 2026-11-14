@@ -31,7 +31,7 @@
 - [x] Запазена Identity миграция и AddInitialBusinessSchema migration.
 - [x] Идемпотентен SQL script, изпитан двукратно.
 - [x] Изрично справочно/demo seeding без hardcoded пароли.
-- [x] Реални SQL Server LocalDB проверки: 34 DB теста + 4 HTTP и 2 metadata теста без база.
+- [x] Реални SQL Server LocalDB проверки: 42 DB теста + 4 HTTP и 2 metadata теста без база.
 - [x] Традиционен entity/DbContext стил и изрично mapped обратни navigation properties.
 - [x] Техническа документация, спецификация и ER диаграми в хранилището.
 

@@ -986,3 +986,23 @@ Navigation metadata е разширена, релационната схема �
 NavigationMappingTests проверява правилните inverse/FK двойки, различните
 user relationships, инициализацията на колекциите и Identity delete behavior,
 без отваряне на DB connection.
+
+## PR #2: seeder safety и точни отрицателни проверки
+
+DemoSeedingSafetyTests добавя осем SQL Server regression случая за двата demo slug-а,
+съвпадение/разлика в града, непълна принадлежност, чужд активен Owner и валидно
+повторно seeding след редакция на display полета. При отказ се сравняват хешове
+на всички persisted редове в 49-те моделни таблици, включително rowversion:
+чуждите записи/връзки остават непроменени и няма частично записани seed данни.
+
+Всичките 22 сценария в DatabaseSchemaTests.SqlServer_RejectsInvalidData проверяват
+конкретен SQL error number (547 за CHECK/FK, 2601 за unique index, 2627 за PK)
+и точното constraint/index име в съобщението. Имената са сверени с
+AddInitialBusinessSchema и се проверяват и срещу реалния EF design-time mapping.
+Непознат сценарий се отказва явно. Тестът вече не приема произволна SqlException
+за доказателство, че целевото ограничение работи.
+
+Локална проверка: Release build с 0 warnings/errors; 48 успешни integration
+теста (42 SQL Server, 6 без база), 0 skipped; няма pending model changes.
+Тестовете използват само disposable бази по съществуващия SqlTestDatabase механизъм.
+Приложната база, user-secrets, миграциите и snapshot-ът не са променяни.

@@ -158,8 +158,8 @@ dotnet test DishDrop/DishDrop.IntegrationTests --configuration Release --no-buil
 почистват само собствените новосъздадени бази. Не докосват приложната база или
 чужди контейнери/volumes. При недостъпен SQL Server DB тестовете се провалят явно.
 
-Локална проверка: restore и Release build с 0 warnings/errors; **40 успешни integration
-теста (34 SQL Server, 6 без база), 0 skipped** върху LocalDB 15.0.4382.1.
+Локална проверка: restore и Release build с 0 warnings/errors; **48 успешни integration
+теста (42 SQL Server, 6 без база), 0 skipped** върху LocalDB 15.0.4382.1.
 Проверени са празна база, legacy upgrade със запазен потребител, duplicate email
 диагностика, PK/FK/unique/checks, snapshots/restrict delete, filtered indexes,
 rowversion, repeat seeding, SQL script x2 и стандартна регистрация.
