@@ -1,3 +1,7 @@
 <Solution>
   <Project Path="DishDrop.Web/DishDrop.Web.csproj" />
+  <Project Path="DishDrop.Data/DishDrop.Data.csproj" />
+  <Project Path="DishDrop.Core/DishDrop.Core.csproj" />
+  <Project Path="DishDrop.UnitTests/DishDrop.UnitTests.csproj" />
+  <Project Path="DishDrop.IntegrationTests/DishDrop.IntegrationTests.csproj" />
 </Solution>
