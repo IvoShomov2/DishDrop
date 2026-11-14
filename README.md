@@ -14,7 +14,7 @@
 | Проект | Отговорност |
 | --- | --- |
 | DishDrop.Web | MVC, Identity Razor Pages, startup/DI и изрични seed команди |
-| DishDrop.Data | ApplicationUser, entities/enums, Fluent конфигурации, контекст, migrations и seeder |
+| DishDrop.Data | ApplicationUser, entities/enums с атрибути, DataConstants, Fluent API в DbContext, migrations и seeder |
 | DishDrop.Core | Място за бъдещите бизнес услуги; зависи от Data |
 | DishDrop.UnitTests | xUnit проект без бизнес тестове на този етап |
 | DishDrop.IntegrationTests | HTTP smoke/Identity проверки и отделени SQL Server schema тестове |

@@ -2,7 +2,15 @@
 
 ## Статус и общи решения
 
-Моделът е реализиран в Data с отделни IEntityTypeConfiguration класове.
+Моделът е реализиран в Data с атрибути в entities, DataConstants за дължини,
+SQL типове и CHECK/filter изрази, и допълнителен Fluent API директно в
+ApplicationDbContext.OnModelCreating чрез private методи по области.
+Required/MaxLength, Table/Column, Key/ForeignKey и Timestamp са в entities.
+Precision запазва оригиналните precision/scale facets заедно с Column SQL типа.
+Nullable свойствата не получават Required. SQL CHECK ограниченията остават
+изрично регистрирани в DbContext, без заместване с Range.
+Съставните PK (включително NONCLUSTERED), relationships с NO ACTION, индекси,
+defaults и стандартните Identity key lengths също се задават там след base.OnModelCreating.
 Има 42 нови бизнес таблици и разширена AspNetUsers; стандартните
 AspNetRoles, AspNetUserRoles, AspNetUserClaims, AspNetUserLogins, AspNetUserTokens и
 AspNetRoleClaims са запазени. ApplicationUser наследява IdentityUser със string ключ.
@@ -916,3 +924,23 @@ Docker daemon не беше наличен и GitHub runner не е изпълн
 [индекси](https://learn.microsoft.com/en-us/ef/core/modeling/indexes),
 [миграции](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/managing),
 [Visual Studio PMC](https://learn.microsoft.com/en-us/ef/core/cli/powershell).
+
+## Проверка на организационното рефакториране
+
+Изходно състояние: commit b5a455b, branch feature/database-foundation.
+Преди и след замяната на Configuration класовете е експортиран design-time
+релационният модел без DB connection: 49 таблици, 326 колони и 44 CHECK ограничения.
+Детерминираното сравнение включва имена/schema, типове/nullability, defaults и
+computed SQL, collation, PK/unique/FK с колони и delete behavior, индекси с filters,
+clustered/include/direction настройки, CHECK SQL, precision/scale/max lengths,
+value generation/save behavior, converters и concurrency/shadow свойства.
+
+Експортите преди/след са byte-for-byte еднакви, SHA-256:
+556D060629C4631A726836BE6C7953A7A9D78C6B8DC29402E13890269475C987.
+Генерираният CREATE SQL също е byte-for-byte еднакъв, SHA-256:
+7DB3B5973B8CC22A3DAE3D26B8729A44FBC70A54AEAD568E92ABACEB1E87D9F2.
+
+EF has-pending-model-changes потвърждава съвпадение със запазения snapshot.
+Съществуващите migrations, snapshot и предавания SQL script не са редактирани.
+Няма нова миграция и няма промяна на приложната база или user-secrets.
+SQL Server тестовете използват само новосъздадени disposable тестови бази.

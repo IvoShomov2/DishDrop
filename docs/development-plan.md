@@ -9,7 +9,7 @@
 - [x] Количка, поръчки/snapshots, плащания, доставки и histories.
 - [x] Отзиви/отговори, поддръжка, известия и audit модел.
 - [x] ApplicationUser и адаптирани Register/Manage страници.
-- [x] Fluent configurations, checks, FK/unique индекси и rowversion.
+- [x] Атрибути и DataConstants плюс Fluent API в DbContext; checks, FK/unique индекси и rowversion.
 - [x] Запазена Identity миграция и AddInitialBusinessSchema migration.
 - [x] Идемпотентен SQL script, изпитан двукратно.
 - [x] Изрично справочно/demo seeding без hardcoded пароли.

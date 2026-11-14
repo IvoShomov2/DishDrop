@@ -6,13 +6,19 @@
 | --- | --- |
 | Web → Core, Data | MVC/Identity UI, HTTP pipeline, конфигурация/DI и изричен seed entry point |
 | Core → Data | Бъдещи бизнес правила/use cases; още няма реализирани услуги |
-| Data | Entities/enums, ApplicationUser, Fluent configurations, DbContext, migrations и seeder |
+| Data | Entities/enums с атрибути, ApplicationUser, DataConstants, DbContext, migrations и seeder |
 | UnitTests → Core | Бъдещи бизнес тестове; засега няма тестове |
 | IntegrationTests → Web, Data | HTTP smoke/Identity и SQL Server schema тестове |
 
 Data отделя persistence от HTTP/UI; Core ще отдели бизнес правилата от
-контролерите. Persistence enums остават в Data. Всички моделни конфигурации
-са в отделни IEntityTypeConfiguration класове и се откриват от контекста.
+контролерите. Persistence enums остават в Data. Основните настройки са атрибути в entities: Required/MaxLength, Table/Column,
+Key/ForeignKey, Timestamp и Precision. DataConstants събира дължините, SQL
+типовете и точните CHECK/filter изрази, групирани по entity/област.
+Допълнителният Fluent API е в private методи на ApplicationDbContext,
+извикани след base.OnModelCreating: composite keys, relationships/delete behavior,
+индекси, CHECK constraints, defaults и дължини на стандартните Identity ключове.
+Няма отделни Configuration класове или автоматично откриване от assembly.
+Data/Entities остава DB моделът, Web/Models — ViewModels/FormModels, Core — бъдещи услуги.
 
 Identity UI използва Razor Pages и ApplicationUser със запазен string ключ.
 Register/Manage са адаптирани за FirstName/LastName, останалото UI е от Identity.
