@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 
-namespace DishDrop.Web.Data.Migrations
+namespace DishDrop.Data.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {
@@ -218,3 +218,4 @@ namespace DishDrop.Web.Data.Migrations
         }
     }
 }
+
