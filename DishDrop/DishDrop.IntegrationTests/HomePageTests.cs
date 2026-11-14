@@ -7,6 +7,7 @@ using Xunit;
 
 namespace DishDrop.IntegrationTests;
 
+[Trait("Category", "NoDatabase")]
 public class HomePageTests
 {
     [Fact]

@@ -15,4 +15,44 @@ jobs:
           dotnet-version: '10.0.x'
       - run: dotnet restore DishDrop/DishDrop.slnx
       - run: dotnet build DishDrop/DishDrop.slnx --configuration Release --no-restore
-      - run: dotnet test DishDrop/DishDrop.slnx --configuration Release --no-build
+      - run: dotnet test DishDrop/DishDrop.slnx --configuration Release --no-build --filter "Category!=Database"
+  sql-server-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Start disposable SQL Server
+        shell: bash
+        run: |
+          set -euo pipefail
+          SQL_PASSWORD="$(openssl rand -hex 24)aA1!"
+          echo "::add-mask::$SQL_PASSWORD"
+          docker run -d --name dishdrop-ci-sql -p 1433:1433 \
+            -e ACCEPT_EULA=Y -e MSSQL_PID=Developer \
+            -e MSSQL_SA_PASSWORD="$SQL_PASSWORD" \
+            mcr.microsoft.com/mssql/server:2022-latest
+          printf 'DISHDROP_TEST_SQL=Server=localhost,1433;User ID=sa;Password=%s;TrustServerCertificate=True\n' "$SQL_PASSWORD" >> "$GITHUB_ENV"
+          for attempt in {1..60}; do
+            if docker exec -e SQLCMDPASSWORD="$SQL_PASSWORD" dishdrop-ci-sql \
+              /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -C -Q 'SELECT 1' >/dev/null 2>&1; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo 'SQL Server readiness failed.' >&2
+          exit 1
+      - run: dotnet restore DishDrop/DishDrop.slnx
+      - run: dotnet build DishDrop/DishDrop.slnx --configuration Release --no-restore
+      - name: Run required database tests
+        run: dotnet test DishDrop/DishDrop.IntegrationTests --configuration Release --no-build --filter "Category=Database" --logger "trx;LogFileName=database.trx"
+      - name: Assert database tests were discovered
+        run: |
+          python3 -c "import glob, xml.etree.ElementTree as E; paths=glob.glob('**/database.trx',recursive=True); assert paths, 'Missing DB test results'; counts=[E.parse(p).find('.//{*}Counters') for p in paths]; assert sum(int(c.attrib['total']) for c in counts)>0, 'No DB tests discovered'; assert sum(int(c.attrib['notExecuted']) for c in counts)==0, 'DB tests were skipped'"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sql-test-results
+          path: '**/TestResults/*.trx'
