@@ -9,7 +9,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace DishDrop.IntegrationTests
 {
-    internal sealed class TestApplicationFactory : WebApplicationFactory<Program>
+    internal sealed class TestApplicationFactory : WebApplicationFactory<DishDrop.Web.Program>
     {
         private const string DummyConnectionString =
             "Server=127.0.0.1,1;Database=DishDropHttpTests;Integrated Security=True;Connect Timeout=1;TrustServerCertificate=True";

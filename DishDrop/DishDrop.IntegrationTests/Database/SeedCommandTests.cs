@@ -32,7 +32,7 @@ public class SeedCommandTests
             UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true,
             CreateNoWindow = true
         };
-        start.ArgumentList.Add(typeof(Program).Assembly.Location);
+        start.ArgumentList.Add(typeof(DishDrop.Web.Program).Assembly.Location);
         start.ArgumentList.Add(command);
         start.Environment["ASPNETCORE_ENVIRONMENT"] = environment;
         start.Environment["DOTNET_ENVIRONMENT"] = environment;
