@@ -33,11 +33,11 @@ namespace DishDrop.IntegrationTests
         protected override IHost CreateHost(IHostBuilder builder)
         {
             // Host configuration is replayed before WebApplication.CreateBuilder returns,
-            // so Program's immediate configuration validation sees this per-factory value.
-            builder.UseEnvironment("Testing");
+            // so Program.Main's immediate configuration validation sees this per-factory value.
             builder.ConfigureHostConfiguration(configuration =>
                 configuration.AddInMemoryCollection(new Dictionary<string, string?>
                 {
+                    [HostDefaults.EnvironmentKey] = "Testing",
                     ["ConnectionStrings:DefaultConnection"] = connectionString
                 }));
 
