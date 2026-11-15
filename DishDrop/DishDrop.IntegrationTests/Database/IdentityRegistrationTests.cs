@@ -1,10 +1,7 @@
 using System.Net;
 using System.Text.RegularExpressions;
-using DishDrop.Data;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace DishDrop.IntegrationTests.Database;
@@ -16,8 +13,7 @@ public class IdentityRegistrationTests
     public async Task StandardRegistration_PersistsNamesAndStillRequiresConfirmation()
     {
         await using var database = await SqlTestDatabase.CreateAsync();
-        await using var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-            builder.ConfigureServices(services => services.AddDbContext<ApplicationDbContext>(o => o.UseSqlServer(database.ConnectionString))));
+        await using var factory = new TestApplicationFactory(database.ConnectionString);
         using var client = factory.CreateClient(new WebApplicationFactoryClientOptions
         {
             BaseAddress = new Uri("https://localhost"), AllowAutoRedirect = false

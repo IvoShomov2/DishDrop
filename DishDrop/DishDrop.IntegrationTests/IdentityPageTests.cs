@@ -12,7 +12,7 @@ public class IdentityPageTests
     [InlineData("/Identity/Account/Register", "Input.FirstName")]
     public async Task IdentityPages_OpenWithApplicationUser(string path, string expected)
     {
-        await using var factory = new WebApplicationFactory<Program>();
+        await using var factory = new TestApplicationFactory();
         using var client = factory.CreateClient(new WebApplicationFactoryClientOptions { BaseAddress = new Uri("https://localhost") });
         using var response = await client.GetAsync(path);
         response.EnsureSuccessStatusCode();
@@ -22,7 +22,7 @@ public class IdentityPageTests
     [Fact]
     public async Task Manage_RequiresAuthentication()
     {
-        await using var factory = new WebApplicationFactory<Program>();
+        await using var factory = new TestApplicationFactory();
         using var client = factory.CreateClient(new WebApplicationFactoryClientOptions
         {
             BaseAddress = new Uri("https://localhost"), AllowAutoRedirect = false

@@ -158,13 +158,14 @@ dotnet test DishDrop/DishDrop.IntegrationTests --configuration Release --no-buil
 почистват само собствените новосъздадени бази. Не докосват приложната база или
 чужди контейнери/volumes. При недостъпен SQL Server DB тестовете се провалят явно.
 
-Локална проверка: restore и Release build с 0 warnings/errors; **48 успешни integration
-теста (42 SQL Server, 6 без база), 0 skipped** върху LocalDB 15.0.4382.1.
+Локална проверка: restore и Release build с 0 warnings/errors; **49 успешни integration
+теста (42 SQL Server, 7 без база), 0 skipped** върху LocalDB 15.0.4382.1.
 Проверени са празна база, legacy upgrade със запазен потребител, duplicate email
 диагностика, PK/FK/unique/checks, snapshots/restrict delete, filtered indexes,
 rowversion, repeat seeding, SQL script x2 и стандартна регистрация.
 Двата NavigationMappingTests са metadata проверки без DB connection; останалите
-четири теста без база са HTTP проверки. UnitTests няма тестове — няма заявено бизнес coverage.
+четири теста без база са HTTP проверки. Допълнителна test-host проверка доказва
+среда Testing, липса на User Secrets provider и отказ на sync/async DB връзки. UnitTests няма тестове — няма заявено бизнес coverage.
 
 CI пази restore/build/smoke job и добавя отделен SQL Server 2022 integration job.
 Контейнерната парола се генерира временно и се маскира; job-ът проверява, че DB
@@ -197,3 +198,12 @@ HTTP test host проверките не заместват ръчна брау�
 CRUD екрани и панели, модерация/поддръжка и функционални тестове.
 SQL ограниченията не реализират тези процеси. Онлайн плащания, GPS и финансово
 разплащане с куриери са отложени.
+
+WebApplicationFactory тестовете използват общ TestApplicationFactory. Той подава
+ConnectionStrings:DefaultConnection през host configuration преди Program да
+прочете стойността и винаги използва Testing, без локални User Secrets.
+HTTP тестовете получават фиктивна конфигурация и interceptor, който отказва
+DB connection. Registration тестът получава connection string само за своята
+disposable SQL база. Няма глобални environment промени между тестовете.
+DefaultConnection не е необходим в appsettings за изпълнение на тези тестове;
+нормалното приложение продължава да изисква собствена изрична конфигурация.
