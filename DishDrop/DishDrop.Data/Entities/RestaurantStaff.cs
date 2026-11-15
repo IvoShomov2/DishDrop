@@ -1,0 +1,29 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using DishDrop.Data.Enums;
+using static DishDrop.Data.DataConstants.Identity;
+
+namespace DishDrop.Data.Entities
+{
+    [Table("RestaurantStaff")]
+    public class RestaurantStaff
+    {
+        public int RestaurantId { get; set; }
+
+        [Required]
+        [MaxLength(UserIdMaxLength)]
+        public string UserId { get; set; } = null!;
+
+        public StaffRole StaffRole { get; set; }
+
+        public bool IsActive { get; set; } = true;
+
+        public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+
+        [ForeignKey(nameof(RestaurantId))]
+        public Restaurant Restaurant { get; set; } = null!;
+
+        [ForeignKey(nameof(UserId))]
+        public ApplicationUser User { get; set; } = null!;
+    }
+}
