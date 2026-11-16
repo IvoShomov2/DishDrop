@@ -1,11 +1,27 @@
 # DishDrop
 
 Дипломен проект за доставка на храна с ASP.NET Core MVC, EF Core и SQL Server.
-Планирани роли: Customer, Restaurant, Courier и Admin (един потребител може да има няколко).
+Роли: Customer, Restaurant (собственик), Courier и Admin. Разрешените начални комбинации са описани в спецификацията; текущият Identity модел още не ги ограничава.
 
 Текущ статус: многослойна структура и начална бизнес схема с migrations,
 изричен seeder и SQL Server integration тестове. Има MVC шаблон и Identity UI;
 няма реализирани бизнес услуги, CRUD панели, checkout или куриерски процес.
+
+## Текущо и предстоящо
+
+Новият договорен обхват от двата Word документа (16.11.2026 г.) е за проста начална работеща версия: София и 24 района, един owner/един ресторант, категории/ястия с една цена, обща ресторантска такса, cash плащане и нужната история. Опростяването още не е приложено. Кодът и командите по-долу продължават да използват текущата по-широка схема и стария demo каталог.
+
+| Документ | Какво определя |
+| --- | --- |
+| [AGENTS.md](AGENTS.md) | Правила за работа по една възложена задача и граници за Codex |
+| [Архитектура](docs/architecture.md) | Реални папки, зависимости, стил и ясно отбелязани бъдещи примери |
+| [Спецификация](docs/project-specification.md) | Договорена начална работеща версия, права, критерии и отворени въпроси |
+| [План за разработка](docs/development-plan.md) | Фактическа основа, училищен Етап 1 и малки зависими задачи |
+| [План за базата](docs/database-change-plan.md) | Предложения за schema/data преобразуване; не е изпълнена миграция |
+| [Текуща база](docs/database.md) и [ER диаграми](docs/database-diagram.md) | Действителният сегашен модел, а не бъдещата опростена схема |
+| [Бъдещо надграждане](docs/future-improvements.md) | Отложени идеи, всяка само след отделно възлагане |
+
+Училищният Етап 1 (концепция и техническа основа) е различен от началната работеща версия. Подготвени документи не означават консултантско одобрение, предоставен достъп или завършен продукт.
 
 ## Структура
 
@@ -50,7 +66,7 @@ Startup Project, изберете https и F5. При нужда доверет�
 ~~~
 
 Не презаписвайте други секрети. За съществуваща база първо направете backup и
-проверете сървъра/името. Запазен е Web UserSecretsId и LocalDB примерът в appsettings.json.
+проверете сървъра/името. Запазен е Web UserSecretsId; DefaultConnection не е записан в appsettings.json и се задава изрично чрез User Secrets или средата.
 Production конфигурацията се подава отделно, например чрез environment
 ConnectionStrings__DefaultConnection. Пароли/ключове не се записват в Git.
 
@@ -91,7 +107,7 @@ Update-Database -Project DishDrop.Data -StartupProject DishDrop.Web
 Проверете текущата директория на PMC при относителния Output път.
 Identity използва ApplicationUser, стандартни роли, RequireUniqueEmail=true и
 запазено RequireConfirmedAccount=true. Реален email provider не е добавян.
-Register/Manage са адаптирани само за имената и стандартните полета.
+Register/Manage са адаптирани само за имената и стандартните полета. Това е текущото поведение: началният договор предвижда deferred email confirmation и Customer права при регистрация в отделна задача, без масово EmailConfirmed=true.
 
 ## Изрично seeding
 
@@ -102,7 +118,7 @@ $env:ASPNETCORE_ENVIRONMENT = "Development"
 dotnet run --project DishDrop/DishDrop.Web --no-launch-profile -- --seed-reference
 ~~~
 
-Reference режимът създава ролите, Демоград, три района, кухни и 14 алергена.
+Reference режимът в текущия код създава ролите, Демоград, три района, кухни и 14 алергена. Той още не е новото София/24 района seeding и не трябва да се представя като такова.
 Demo режимът изисква парола от user-secrets (заменете placeholder-а локално):
 
 ~~~powershell
@@ -158,20 +174,11 @@ dotnet test DishDrop/DishDrop.IntegrationTests --configuration Release --no-buil
 почистват само собствените новосъздадени бази. Не докосват приложната база или
 чужди контейнери/volumes. При недостъпен SQL Server DB тестовете се провалят явно.
 
-Локална проверка: restore и Release build с 0 warnings/errors; **49 успешни integration
-теста (42 SQL Server, 7 без база), 0 skipped** върху LocalDB 15.0.4382.1.
-Проверени са празна база, legacy upgrade със запазен потребител, duplicate email
-диагностика, PK/FK/unique/checks, snapshots/restrict delete, filtered indexes,
-rowversion, repeat seeding, SQL script x2 и стандартна регистрация.
-Двата NavigationMappingTests са metadata проверки без DB connection; останалите
-четири теста без база са HTTP проверки. Допълнителна test-host проверка доказва
-среда Testing, липса на User Secrets provider и отказ на sync/async DB връзки. UnitTests няма тестове — няма заявено бизнес coverage.
+В тази документационна задача не са изпълнявани build или тестове. За актуален резултат използвайте горните команди или CI за конкретния commit; старите бройки/отчети не са текуща атестация.
 
-CI пази restore/build/smoke job и добавя отделен SQL Server 2022 integration job.
-Контейнерната парола се генерира временно и се маскира; job-ът проверява, че DB
-тестовете са открити и не са skipped. Няма deployment или coverage threshold.
-Docker daemon и GitHub runner не са проверени локално; реалните локални DB
-резултати са от SQL Server LocalDB, не от InMemory.
+Съществуват HTTP/Identity, metadata, migration/constraint, rowversion, snapshot и seeder safety проверки. UnitTests още няма бизнес тестове; няма твърдение за coverage на бъдещи услуги. SQL тестовете използват disposable бази, а не EF InMemory.
+
+CI има restore/build/test job без база и отделен SQL Server 2022 integration job. Временната контейнерна парола се генерира/маскира; job-ът проверява, че DB тестовете са открити и не са skipped. Няма deployment или coverage threshold. Днешният статус на CI и приложната development база не са проверявани.
 
 ## Ръчна проверка в SSMS
 
@@ -193,11 +200,10 @@ HTTP test host проверките не заместват ръчна брау�
 - [ER диаграми по области](docs/database-diagram.md)
 - [Спецификация](docs/project-specification.md)
 - [План](docs/development-plan.md)
+- [План за промяна на базата](docs/database-change-plan.md)
+- [Отложени възможности](docs/future-improvements.md)
 
-Предстоят бизнес услуги, authorization, транзакционен checkout и courier workflow,
-CRUD екрани и панели, модерация/поддръжка и функционални тестове.
-SQL ограниченията не реализират тези процеси. Онлайн плащания, GPS и финансово
-разплащане с куриери са отложени.
+Предстоят отделно одобрено опростяване на модела, началните account/approval/ownership услуги, каталог, количка, checkout, доставка/плащане, администрация и съответните MVC екрани/тестове. SQL ограниченията не реализират тези процеси. Модерация, поддръжка, известия, варианти/добавки и другото бъдещо надграждане не са задължителни за началната версия.
 
 WebApplicationFactory тестовете използват общ TestApplicationFactory. Той подава
 ConnectionStrings:DefaultConnection през host configuration преди Program да
